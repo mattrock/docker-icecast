@@ -35,8 +35,6 @@ RUN mkdir /build
 COPY icecastenv.xml /build/icecastenv.xml
 COPY entrypoint.sh /build/entrypoint.sh
 
-# RUN set > build.txt
-
 ENTRYPOINT ["/build/entrypoint.sh"]
 EXPOSE 8000
 # EXPOSE 8443

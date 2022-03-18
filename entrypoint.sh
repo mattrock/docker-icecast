@@ -1,11 +1,9 @@
 #!/bin/sh
 # by MattRock [matt.rockwell@gmail.com] 3/22
 
-# set > run.txt
-
 # Backup last config
-if test -f "/data/icecast.xml"; then
-    cp /data/icecast.xml /data/icecast_${HOSTNAME}_backup.xml
+if test -f "/data/icecast_${HOSTNAME}.xml"; then
+    cp /data/icecast_${HOSTNAME}.xml /data/icecast_${HOSTNAME}_backup.xml
 fi
 
 # Substitute environment variables
