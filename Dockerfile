@@ -10,8 +10,8 @@ ENV source_password="hackme"
 ENV relay_password="hackme"
 
 # Limits
-ENV clients=250
-ENV sources=4
+ENV clients=100
+ENV sources=2
 ENV queue_size=524288
 ENV client_timeout=30
 ENV header_timeout=15
@@ -31,8 +31,12 @@ RUN set -x && \
 
 # Create datastore and populate
 VOLUME /data
-COPY icecastenv.xml /icecastenv.xml
-COPY entry.sh /entry.sh
-ENTRYPOINT ["/entry.sh"]
+RUN mkdir /build
+COPY icecastenv.xml /build/icecastenv.xml
+COPY entrypoint.sh /build/entrypoint.sh
+
+# RUN set > build.txt
+
+ENTRYPOINT ["/build/entrypoint.sh"]
 EXPOSE 8000
-EXPOSE 8443
+# EXPOSE 8443

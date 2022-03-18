@@ -21,10 +21,10 @@
     <listen-socket>
         <port>8000</port>
     </listen-socket>
-    <listen-socket>
+    <!-- <listen-socket>
         <port>8443</port>
         <ssl>1</ssl>
-    </listen-socket>
+    </listen-socket> -->
     <http-headers>
         <header name="Access-Control-Allow-Origin" value="*" />
     </http-headers>
