@@ -19,22 +19,22 @@ ENV source_timeout=10
 ENV burst_on_connect=1
 ENV burst_size=65535
 
-# Install icecast
-RUN apk add icecast mailcap
-
 # Install envsubst
 RUN set -x && \
-    apk add --update libintl && \
-    apk add --virtual build_deps gettext &&  \
+    apk add --no-cache libintl && \
+    apk add --no-cache --virtual build_deps &&  \
+    apk add --no-cache gettext && \
     cp /usr/bin/envsubst /usr/local/bin/envsubst && \
     apk del build_deps
 
-# Create datastore and populate
-VOLUME /data
-RUN mkdir /build
-COPY icecastenv.xml /build/icecastenv.xml
-COPY entrypoint.sh /build/entrypoint.sh
-
-ENTRYPOINT ["/build/entrypoint.sh"]
+RUN apk add mailcap icecast
+#USER icecast:icecast
+# COPY [--chown=icecast:icecast] icecastenv.xml /icecastenv.xml
+# COPY [--chown=icecast:icecast] entrypoint.sh /entrypoint.sh
+COPY icecastenv.xml /icecastenv.xml
+COPY entrypoint.sh /entrypoint.sh
 EXPOSE 8000
 # EXPOSE 8443
+VOLUME ["/data"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD /usr/bin/icecast -c /data/icecast.${HOSTNAME}.xml

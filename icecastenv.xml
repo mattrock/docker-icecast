@@ -31,23 +31,21 @@
     <fileserve>1</fileserve>
     <paths>
         <basedir>/data</basedir>
-        <!-- <logdir>/var/log/icecast</logdir> -->
-        <webroot>/usr/share/icecast/web</webroot>
-        <adminroot>/usr/share/icecast/admin</adminroot>
+        <webroot>/web</webroot>
+        <adminroot>/admin</adminroot>
         <alias source="/" destination="/status.xsl"/>
         <!-- The certificate file needs to contain both public and private part.
              Both should be PEM encoded. -->
-        <ssl-certificate>/data/icecast.pem</ssl-certificate>
+        <!-- <ssl-certificate>/data/icecast.${HOSTNAME}.pem</ssl-certificate> -->
     </paths>
     <logging>
         <accesslog>-</accesslog>
         <errorlog>-</errorlog>
         <playlistlog>-</playlistlog>
         <loglevel>3</loglevel> <!-- 4 Debug, 3 Info, 2 Warn, 1 Error -->
-        <!-- <logsize>10000</logsize> Max size of a logfile -->
     </logging>
     <security>
-        <chroot>0</chroot>
+        <chroot>1</chroot>
         <changeowner>
             <user>icecast</user>
             <group>icecast</group>
