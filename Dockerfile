@@ -1,16 +1,16 @@
 # syntax=docker/dockerfile:1.3-labs
 FROM python:3
 # Icecast limits configured at build
-ARG location=Earth
-ARG public_admin="icemaster@localhost"
 ARG clients=100
 ARG sources=2
-ARG queue_size=524288
-ARG client_timeout=30
-ARG header_timeout=15
-ARG source_timeout=10
-ARG burst_on_connect=1
-ARG burst_size=65535
+ARG queuesize=524288
+ARG clienttimeout=30
+ARG headertimeout=15
+ARG sourcetimeout=10
+ARG burstonconnect=1
+ARG burstsize=65535
+# loglevels debug oe 4, info or 3, warn or 2, error or 1
+ARG loglevel=debug
 # Build icecastenv.xml
 RUN python3 <<EOF > icecastenv.xml
 import os 
@@ -20,16 +20,16 @@ iceconf = ET.Element('icecast')
 comment = ET.Comment('by MattRock [matt.rockwell@gmail.com] 3/22')
 iceconf.append(comment)
 admin = ET.SubElement(iceconf, 'admin')
-admin.text = os.environ['public_admin']
+admin.text = '\${publicadmin}'
 authentication = ET.SubElement(iceconf, 'authentication')
 sourcepassword = ET.SubElement(authentication, 'source-password')
-sourcepassword.text = '\${source_password}'
+sourcepassword.text = '\${sourcepassword}'
 relaypassword = ET.SubElement(authentication, 'relay-password')
-relaypassword.text = '\${relay_password}'
+relaypassword.text = '\${relaypassword}'
 adminuser = ET.SubElement(authentication, 'admin-user')
-adminuser.text = '\${admin_user}'
+adminuser.text = '\${adminuser}'
 adminpassword = ET.SubElement(authentication, 'admin-password')
-adminpassword.text = '\${admin_password}'
+adminpassword.text = '\${adminpassword}'
 fileserve = ET.SubElement(iceconf, 'fileserve')
 fileserve.text = '1'
 hostname = ET.SubElement(iceconf, 'hostname')
@@ -44,22 +44,22 @@ clients.text=os.environ['clients']
 sources = ET.SubElement(limits, 'sources')
 sources.text=os.environ['sources']
 queuesize = ET.SubElement(limits, 'queue-size')
-queuesize.text=os.environ['queue_size']
+queuesize.text=os.environ['queuesize']
 clienttimeout = ET.SubElement(limits, 'client-timeout')
-clienttimeout.text=os.environ['client_timeout']
+clienttimeout.text=os.environ['clienttimeout']
 headertimeout = ET.SubElement(limits, 'header-timeout')
-headertimeout.text=os.environ['header_timeout']
+headertimeout.text=os.environ['headertimeout']
 sourcetimeout = ET.SubElement(limits, 'source-timeout')
-sourcetimeout.text=os.environ['source_timeout']
+sourcetimeout.text=os.environ['sourcetimeout']
 burstonconnect = ET.SubElement(limits, 'burst-on-connect')
-burstonconnect.text=os.environ['burst_on_connect']
+burstonconnect.text=os.environ['burstonconnect']
 burstsize = ET.SubElement(limits, 'burst-size')
-burstsize.text=os.environ['burst_size']
+burstsize.text=os.environ['burstsize']
 listensocket = ET.SubElement(iceconf, 'listen-socket')
 port = ET.SubElement(listensocket, 'port')
 port.text = '8000'
 location = ET.SubElement(iceconf, 'location')
-location.text = os.environ['location']
+location.text = '\${location}'
 logging = ET.SubElement(iceconf, 'logging')
 accesslog = ET.SubElement(logging, 'accesslog')
 accesslog.text='-'
@@ -68,7 +68,14 @@ errorlog.text='-'
 playlistlog = ET.SubElement(logging, 'playlistlog')
 playlistlog.text='-'
 loglevel = ET.SubElement(logging, 'loglevel')
-loglevel.text='3'
+if os.environ['loglevel'].casefold() == 'debug'.casefold() or '4':
+    loglevel.text='4'
+elif os.environ['loglevel'].casefold() == 'warn'.casefold() or '2':
+    loglevel.text='2'
+elif os.environ['loglevel'].casefold() == 'error'.casefold() or '1':
+    loglevel.text='1'
+else:
+    loglevel.text='3'
 paths = ET.SubElement(iceconf, 'paths')
 adminroot = ET.SubElement(paths, 'adminroot')
 adminroot.text = '/admin'
@@ -93,10 +100,12 @@ EOF
 FROM alpine:latest
 LABEL maintainer="matt.rockwell@gmail.com"
 # Administration defaults
-ENV admin_user="admin"
-ENV admin_password="hackme"
-ENV source_password="hackme"
-ENV relay_password="hackme"
+ENV location=Earth
+ENV publicadmin=icemaster@localhost
+ENV adminuser=admin
+ENV adminpassword=hackme
+ENV sourcepassword=hackme
+ENV relaypassword=hackme
 # Copy the built config template to this image
 COPY --from=0 /icecastenv.xml ./
 # Install envsubst and then dump the build dependencies
