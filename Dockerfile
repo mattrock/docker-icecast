@@ -12,7 +12,7 @@ ARG sourcetimeout=10
 ARG burstonconnect=1
 ARG burstsize=65535
 # loglevels debug or 4, info or 3, warn or 2, error or 1
-ARG loglevel=debug
+ARG loglevel=info
 # Build icecastenv.xml
 RUN python3 <<EOF > icecastenv.xml
 import os 
@@ -44,7 +44,7 @@ limits = ET.SubElement(iceconf, 'limits')
 clients = ET.SubElement(limits, 'clients')
 clients.text='\${clients}'
 sources = ET.SubElement(limits, 'sources')
-sources.text='\$sources'
+sources.text='\${sources}'
 queuesize = ET.SubElement(limits, 'queue-size')
 queuesize.text=os.environ['queuesize']
 clienttimeout = ET.SubElement(limits, 'client-timeout')
