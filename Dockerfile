@@ -1,15 +1,17 @@
 # syntax=docker/dockerfile:1.3-labs
+#  Build a virtual python3 image &
+## use xml.etree to build the Icecast XML config
+## from build arguments.
 FROM python:3
-# Icecast limits configured at build
-ARG clients=100
-ARG sources=2
+#  Icecast limits (except clients & sources)
+## configured at build
 ARG queuesize=524288
 ARG clienttimeout=30
 ARG headertimeout=15
 ARG sourcetimeout=10
 ARG burstonconnect=1
 ARG burstsize=65535
-# loglevels debug oe 4, info or 3, warn or 2, error or 1
+# loglevels debug or 4, info or 3, warn or 2, error or 1
 ARG loglevel=debug
 # Build icecastenv.xml
 RUN python3 <<EOF > icecastenv.xml
@@ -17,7 +19,7 @@ import os
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 iceconf = ET.Element('icecast')
-comment = ET.Comment('by MattRock [matt.rockwell@gmail.com] 3/22')
+comment = ET.Comment('IceX from docker mattrock/icecast by MattRock [matt.rockwell@gmail.com] 3/22')
 iceconf.append(comment)
 admin = ET.SubElement(iceconf, 'admin')
 admin.text = '\${publicadmin}'
@@ -40,9 +42,9 @@ header.set('name','Access-Control-Allow-Origin')
 header.set('value','*')
 limits = ET.SubElement(iceconf, 'limits')
 clients = ET.SubElement(limits, 'clients')
-clients.text=os.environ['clients']
+clients.text='\${clients}'
 sources = ET.SubElement(limits, 'sources')
-sources.text=os.environ['sources']
+sources.text='\$sources'
 queuesize = ET.SubElement(limits, 'queue-size')
 queuesize.text=os.environ['queuesize']
 clienttimeout = ET.SubElement(limits, 'client-timeout')
@@ -100,6 +102,8 @@ FROM alpine:latest
 LABEL maintainer="Matt Rockwell [matt.rockwell@gmail.com]"
 # Administration defaults
 ENV TZ=America/Chicago
+ENV clients=101
+ENV sources=3
 ENV location=Earth
 ENV publicadmin=icemaster@localhost
 ENV adminuser=admin
