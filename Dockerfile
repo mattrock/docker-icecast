@@ -98,12 +98,12 @@ group = ET.SubElement(changeowner, 'group')
 group.text = 'icecast'
 print (minidom.parseString(ET.tostring(iceconf, 'utf-8')).toprettyxml(indent="  "))
 EOF
-FROM alpine:latest
+FROM alpine:3
 LABEL maintainer="Matt Rockwell [matt.rockwell@gmail.com]"
 # Administration defaults
 ENV TZ=America/Chicago
-ENV clients=101
-ENV sources=3
+ENV clients=100
+ENV sources=2
 ENV location=Earth
 ENV publicadmin=icemaster@localhost
 ENV adminuser=admin
