@@ -96,7 +96,6 @@ group = ET.SubElement(changeowner, 'group')
 group.text = 'icecast'
 print (minidom.parseString(ET.tostring(iceconf, 'utf-8')).toprettyxml(indent="  "))
 EOF
-
 FROM alpine:latest
 LABEL maintainer="matt.rockwell@gmail.com"
 # Administration defaults
