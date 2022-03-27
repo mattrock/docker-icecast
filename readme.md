@@ -10,4 +10,5 @@ Docker-icecast implements Icecast V2 in a lightweight docker container. The Alpi
 Quickstart
 ----------
 With the dockerfile in an empty directory and run the following command.
-`docker build -p 8000:8000 mattrock/docker`
+
+    docker build -p 8000:8000 mattrock/docker
