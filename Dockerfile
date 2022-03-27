@@ -97,8 +97,9 @@ group.text = 'icecast'
 print (minidom.parseString(ET.tostring(iceconf, 'utf-8')).toprettyxml(indent="  "))
 EOF
 FROM alpine:latest
-LABEL maintainer="matt.rockwell@gmail.com"
+LABEL maintainer="Matt Rockwell [matt.rockwell@gmail.com]"
 # Administration defaults
+ENV TZ=America/Chicago
 ENV location=Earth
 ENV publicadmin=icemaster@localhost
 ENV adminuser=admin
@@ -108,12 +109,15 @@ ENV relaypassword=hackme
 # Copy the built config template to this image
 COPY --from=0 /icecastenv.xml ./
 # Install envsubst and then dump the build dependencies
-RUN set -x && \
-    apk add --no-cache libintl && \
+RUN apk add --no-cache libintl && \
     apk add --no-cache --virtual build_deps &&  \
     apk add --no-cache gettext && \
     cp /usr/bin/envsubst /usr/local/bin/envsubst && \
     apk del build_deps
+# Set timezone
+RUN apk add --no-cache alpine-conf && \
+    /sbin/setup-timezone -z $TZ && \
+    apk del alpine-conf
 # Install icecast and mime types
 ## Alpine icecast package creates icecast user & group
 RUN apk add --no-cache mailcap icecast
